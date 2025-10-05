@@ -23,6 +23,7 @@ class InternalRegistration(BaseModel):
     reg_no: str = Field(..., description="Registration number")
     division: str = Field(..., description="Division")
     year_of_study: str = Field(..., description="Year of study")
+    email: str = Field(..., description="Email address")
     recipt_no: str = Field(..., description="recipt_no")
 
 class ExternalRegistration(BaseModel):
@@ -31,6 +32,7 @@ class ExternalRegistration(BaseModel):
     dept_name: str = Field(..., description="Department name")
     year_of_study: str = Field(..., description="Year of study")
     college_name: str = Field(..., description="College name")
+    email: str = Field(..., description="Email address")
     recipt_no: str = Field(..., description="recipt_no")
 
 def get_google_credentials():
@@ -127,9 +129,9 @@ def save_to_google_sheet(data: dict, sheet_type: str):
             headers = worksheet.row_values(1)
             if not headers or len(headers) == 0:
                 if sheet_type == "internal":
-                    worksheet.append_row(["Name", "Registration Number", "Division", "Year of Study", "recipt_no", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Division", "Year of Study", "Email", "recipt_no", "Timestamp"])
                 else:
-                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "recipt_no", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "Email", "recipt_no", "Timestamp"])
                 print(f"Created headers for {sheet_type} sheet")
         except Exception as e:
             print(f"Error checking headers: {e}")
@@ -141,6 +143,7 @@ def save_to_google_sheet(data: dict, sheet_type: str):
                 data['reg_no'],
                 data['division'],
                 data['year_of_study'],
+                data['email'],
                 data['recipt_no'],
                 timestamp
             ]
@@ -151,6 +154,7 @@ def save_to_google_sheet(data: dict, sheet_type: str):
                 data['dept_name'],
                 data['year_of_study'],
                 data['college_name'],
+                data['email'],
                 data['recipt_no'],
                 timestamp
             ]
@@ -239,7 +243,7 @@ app.add_middleware(
 async def register_internal(registration: InternalRegistration, background_tasks: BackgroundTasks):
     """
     Register internal student
-    Data: name, reg_no, division, year_of_study, recipt_no
+    Data: name, reg_no, division, year_of_study, email, recipt_no
     """
     try:
         print(f"Received internal registration request: {registration.name}")
@@ -286,7 +290,7 @@ async def register_internal(registration: InternalRegistration, background_tasks
 async def register_external(registration: ExternalRegistration, background_tasks: BackgroundTasks):
     """
     Register external student
-    Data: name, reg_no, dept_name, year_of_study, college_name, recipt_no
+    Data: name, reg_no, dept_name, year_of_study, college_name, email, recipt_no
     """
     try:
         print(f"Received external registration request: {registration.name}")
@@ -367,6 +371,7 @@ async def home():
                 "reg_no": "Registration number (required)",
                 "division": "Division (required)",
                 "year_of_study": "Year of study (required)",
+                "email": "Email address (required)",
                 "recipt_no": "recipt_no (required)"
             },
             "example": {
@@ -374,6 +379,7 @@ async def home():
                 "reg_no": "21ITR001",
                 "division": "A",
                 "year_of_study": "3",
+                "email": "john.doe@example.com",
                 "recipt_no": "TXN123456789"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=0#gid=0"
@@ -387,6 +393,7 @@ async def home():
                 "dept_name": "Department name (required)",
                 "year_of_study": "Year of study (required)",
                 "college_name": "College name (required)",
+                "email": "Email address (required)",
                 "recipt_no": "recipt_no (required)"
             },
             "example": {
@@ -395,6 +402,7 @@ async def home():
                 "dept_name": "Information Technology",
                 "year_of_study": "2",
                 "college_name": "ABC Engineering College",
+                "email": "jane.smith@example.com",
                 "recipt_no": "TXN987654321"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=1179914067#gid=1179914067"

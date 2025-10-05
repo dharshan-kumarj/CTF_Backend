@@ -103,6 +103,7 @@ const registerInternal = async (studentData) => {
         reg_no: "21ITR001",
         dept_name: "Computer Science",
         year_of_study: "3",
+        email: "john.doe@example.com",
         recipt_no: "TXN123456789"
       })
     });
@@ -134,6 +135,7 @@ const registerInternal = async (studentData) => {
       reg_no: studentData.regNo,
       dept_name: studentData.department,
       year_of_study: studentData.year,
+      email: studentData.email,
       recipt_no: studentData.recipt_no
     });
     
@@ -154,6 +156,7 @@ interface InternalRegistration {
   reg_no: string;         // Registration number (e.g., "21ITR001")
   dept_name: string;      // Department name
   year_of_study: string;  // Year (e.g., "1", "2", "3", "4")
+  email: string;          // Email address
   recipt_no: string; // Payment recipt_no
 }
 ```
@@ -201,6 +204,7 @@ const [formData, setFormData] = useState({
   dept_name: '',
   year_of_study: '',
   college_name: '',
+  email: '',
   recipt_no: ''
 });
 
@@ -239,6 +243,7 @@ interface ExternalRegistration {
   dept_name: string;      // Department name
   year_of_study: string;  // Year of study
   college_name: string;   // College/University name (Required for external)
+  email: string;          // Email address
   recipt_no: string; // Payment recipt_no
 }
 ```
@@ -253,6 +258,7 @@ interface ExternalRegistration {
     <input v-model="form.dept_name" placeholder="Department" required />
     <input v-model="form.year_of_study" placeholder="Year" required />
     <input v-model="form.college_name" placeholder="College Name" required />
+    <input v-model="form.email" placeholder="Email" required />
     <input v-model="form.recipt_no" placeholder="recipt_no" required />
     <button type="submit">Register</button>
   </form>
@@ -268,6 +274,7 @@ export default {
         dept_name: '',
         year_of_study: '',
         college_name: '',
+        email: '',
         recipt_no: ''
       }
     }
@@ -338,6 +345,7 @@ export interface InternalStudent {
   reg_no: string;
   dept_name: string;
   year_of_study: string;
+  email: string;
   recipt_no: string;
 }
 
@@ -385,6 +393,7 @@ const InternalRegistrationForm: React.FC = () => {
     reg_no: '',
     dept_name: '',
     year_of_study: '',
+    email: '',
     recipt_no: ''
   });
   
@@ -409,6 +418,7 @@ const InternalRegistrationForm: React.FC = () => {
         reg_no: '',
         dept_name: '',
         year_of_study: '',
+        email: '',
         recipt_no: ''
       });
     } catch (error: any) {
@@ -424,6 +434,7 @@ const InternalRegistrationForm: React.FC = () => {
       <input name="reg_no" value={formData.reg_no} onChange={handleChange} placeholder="Registration No" required />
       <input name="dept_name" value={formData.dept_name} onChange={handleChange} placeholder="Department" required />
       <input name="year_of_study" value={formData.year_of_study} onChange={handleChange} placeholder="Year" required />
+      <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
       <input name="recipt_no" value={formData.recipt_no} onChange={handleChange} placeholder="recipt_no" required />
       <button type="submit" disabled={loading}>
         {loading ? 'Submitting...' : 'Register'}
@@ -647,15 +658,15 @@ PORT=8000
 
 ### Internal Students Sheet (gid=0)
 
-| Name | Registration Number | Department | Year of Study | recipt_no | Timestamp |
-|------|---------------------|------------|---------------|----------------|-----------|
-| John Doe | 21ITR001 | Computer Science | 3 | TXN123456 | 2025-10-05 14:30:00 |
+| Name | Registration Number | Department | Year of Study | Email | Email | recipt_no | Timestamp |
+|------|---------------------|------------|---------------|-------|-------|----------------|-----------|
+| John Doe | 21ITR001 | Computer Science | 3 | john.doe@example.com | TXN123456 | 2025-10-05 14:30:00 |
 
 ### External Students Sheet (gid=1179914067)
 
-| Name | Registration Number | Department | Year of Study | College Name | recipt_no | Timestamp |
-|------|---------------------|------------|---------------|--------------|----------------|-----------|
-| Jane Smith | EXT001 | IT | 2 | ABC College | TXN789012 | 2025-10-05 14:35:00 |
+| Name | Registration Number | Department | Year of Study | College Name | Email | Email | recipt_no | Timestamp |
+|------|---------------------|------------|---------------|--------------|-------|-------|----------------|-----------|
+| Jane Smith | EXT001 | IT | 2 | ABC College | jane.smith@example.com | TXN789012 | 2025-10-05 14:35:00 |
 
 ---
 
@@ -720,6 +731,7 @@ curl -X POST http://localhost:8000/register/internal \
     "reg_no": "TEST001",
     "dept_name": "Computer Science",
     "year_of_study": "3",
+    "email": "test.student@example.com",
     "recipt_no": "TXN_TEST_123"
   }'
 
@@ -732,6 +744,7 @@ curl -X POST http://localhost:8000/register/external \
     "dept_name": "IT",
     "year_of_study": "2",
     "college_name": "Test College",
+    "email": "external.test@example.com",
     "recipt_no": "TXN_EXT_456"
   }'
 
@@ -751,6 +764,7 @@ curl http://localhost:8000/queue/status
   "reg_no": "21ITR001",
   "dept_name": "Computer Science",
   "year_of_study": "3",
+  "email": "john.doe@example.com",
   "recipt_no": "TXN123456789"
 }
 ```
