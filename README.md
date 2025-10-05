@@ -26,13 +26,13 @@ Server runs at: **http://localhost:8000**
 ```bash
 POST /register/internal
 ```
-**Required fields:** name, reg_no, dept_name, year_of_study, transaction_id
+**Required fields:** name, reg_no, dept_name, year_of_study, recipt_no
 
 ### 2. External Student Registration
 ```bash
 POST /register/external
 ```
-**Required fields:** name, reg_no, dept_name, year_of_study, college_name, transaction_id
+**Required fields:** name, reg_no, dept_name, year_of_study, college_name, recipt_no
 
 ### 3. Queue Status
 ```bash
@@ -51,7 +51,7 @@ const response = await fetch('http://localhost:8000/register/internal', {
     reg_no: "21ITR001",
     dept_name: "Computer Science",
     year_of_study: "3",
-    transaction_id: "TXN123456789"
+    recipt_no: "TXN123456789"
   })
 });
 const data = await response.json();
@@ -64,7 +64,7 @@ const response = await axios.post('http://localhost:8000/register/internal', {
   reg_no: "21ITR001",
   dept_name: "Computer Science",
   year_of_study: "3",
-  transaction_id: "TXN123456789"
+  recipt_no: "TXN123456789"
 });
 ```
 
@@ -93,7 +93,7 @@ const response = await axios.post('http://localhost:8000/register/internal', {
 # cURL example
 curl -X POST http://localhost:8000/register/internal \
   -H "Content-Type: application/json" \
-  -d '{"name":"Test","reg_no":"T001","dept_name":"CS","year_of_study":"3","transaction_id":"TXN123"}'
+  -d '{"name":"Test","reg_no":"T001","dept_name":"CS","year_of_study":"3","recipt_no":"TXN123"}'
 ```
 
 ## 🏗️ Architecture

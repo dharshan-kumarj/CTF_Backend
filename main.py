@@ -21,9 +21,9 @@ registration_queue = queue.Queue()
 class InternalRegistration(BaseModel):
     name: str = Field(..., description="Student name")
     reg_no: str = Field(..., description="Registration number")
-    dept_name: str = Field(..., description="Department name")
+    division: str = Field(..., description="Division")
     year_of_study: str = Field(..., description="Year of study")
-    transaction_id: str = Field(..., description="Transaction ID")
+    recipt_no: str = Field(..., description="recipt_no")
 
 class ExternalRegistration(BaseModel):
     name: str = Field(..., description="Student name")
@@ -31,7 +31,7 @@ class ExternalRegistration(BaseModel):
     dept_name: str = Field(..., description="Department name")
     year_of_study: str = Field(..., description="Year of study")
     college_name: str = Field(..., description="College name")
-    transaction_id: str = Field(..., description="Transaction ID")
+    recipt_no: str = Field(..., description="recipt_no")
 
 def get_google_credentials():
     """Load Google credentials from environment or file"""
@@ -127,9 +127,9 @@ def save_to_google_sheet(data: dict, sheet_type: str):
             headers = worksheet.row_values(1)
             if not headers or len(headers) == 0:
                 if sheet_type == "internal":
-                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "Transaction ID", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Division", "Year of Study", "recipt_no", "Timestamp"])
                 else:
-                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "Transaction ID", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "recipt_no", "Timestamp"])
                 print(f"Created headers for {sheet_type} sheet")
         except Exception as e:
             print(f"Error checking headers: {e}")
@@ -139,9 +139,9 @@ def save_to_google_sheet(data: dict, sheet_type: str):
             row_data = [
                 data['name'],
                 data['reg_no'],
-                data['dept_name'],
+                data['division'],
                 data['year_of_study'],
-                data['transaction_id'],
+                data['recipt_no'],
                 timestamp
             ]
         else:  # external
@@ -151,22 +151,22 @@ def save_to_google_sheet(data: dict, sheet_type: str):
                 data['dept_name'],
                 data['year_of_study'],
                 data['college_name'],
-                data['transaction_id'],
+                data['recipt_no'],
                 timestamp
             ]
         
-        # Check for duplicate registration (based on reg_no and transaction_id)
+        # Check for duplicate registration (based on reg_no and recipt_no)
         try:
             all_records = worksheet.get_all_records()
             for record in all_records:
                 existing_reg = str(record.get('Registration Number', '')).strip()
-                existing_txn = str(record.get('Transaction ID', '')).strip()
+                existing_txn = str(record.get('recipt_no', '')).strip()
                 
                 if (existing_reg == data['reg_no'].strip() and 
-                    existing_txn == data['transaction_id'].strip()):
+                    existing_txn == data['recipt_no'].strip()):
                     return {
                         "error": "Duplicate registration",
-                        "message": f"Registration with reg_no {data['reg_no']} and transaction_id {data['transaction_id']} already exists"
+                        "message": f"Registration with reg_no {data['reg_no']} and recipt_no {data['recipt_no']} already exists"
                     }
         except Exception as e:
             print(f"Error checking duplicates: {e}")
@@ -239,7 +239,7 @@ app.add_middleware(
 async def register_internal(registration: InternalRegistration, background_tasks: BackgroundTasks):
     """
     Register internal student
-    Data: name, reg_no, dept_name, year_of_study, transaction_id
+    Data: name, reg_no, division, year_of_study, recipt_no
     """
     try:
         print(f"Received internal registration request: {registration.name}")
@@ -286,7 +286,7 @@ async def register_internal(registration: InternalRegistration, background_tasks
 async def register_external(registration: ExternalRegistration, background_tasks: BackgroundTasks):
     """
     Register external student
-    Data: name, reg_no, dept_name, year_of_study, college_name, transaction_id
+    Data: name, reg_no, dept_name, year_of_study, college_name, recipt_no
     """
     try:
         print(f"Received external registration request: {registration.name}")
@@ -365,16 +365,16 @@ async def home():
             "fields": {
                 "name": "Student name (required)",
                 "reg_no": "Registration number (required)",
-                "dept_name": "Department name (required)",
+                "division": "Division (required)",
                 "year_of_study": "Year of study (required)",
-                "transaction_id": "Transaction ID (required)"
+                "recipt_no": "recipt_no (required)"
             },
             "example": {
                 "name": "John Doe",
                 "reg_no": "21ITR001",
-                "dept_name": "Computer Science",
+                "division": "A",
                 "year_of_study": "3",
-                "transaction_id": "TXN123456789"
+                "recipt_no": "TXN123456789"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=0#gid=0"
         },
@@ -387,7 +387,7 @@ async def home():
                 "dept_name": "Department name (required)",
                 "year_of_study": "Year of study (required)",
                 "college_name": "College name (required)",
-                "transaction_id": "Transaction ID (required)"
+                "recipt_no": "recipt_no (required)"
             },
             "example": {
                 "name": "Jane Smith",
@@ -395,7 +395,7 @@ async def home():
                 "dept_name": "Information Technology",
                 "year_of_study": "2",
                 "college_name": "ABC Engineering College",
-                "transaction_id": "TXN987654321"
+                "recipt_no": "TXN987654321"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=1179914067#gid=1179914067"
         },

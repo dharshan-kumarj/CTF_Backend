@@ -27,7 +27,7 @@
 | ⚡ **Async Processing** | Non-blocking queue system ensures instant responses |
 | 🔒 **No Data Loss** | Thread-safe queue persists registrations during high load |
 | 🎓 **Dual Registration** | Separate endpoints for internal & external students |
-| 🚫 **Duplicate Detection** | Automatic validation based on reg_no + transaction_id |
+| 🚫 **Duplicate Detection** | Automatic validation based on reg_no + recipt_no |
 | 📊 **Real-time Sheets** | Direct integration with Google Sheets |
 | ⏱️ **Auto Timestamps** | Automatic timestamp for every registration |
 | 🌐 **CORS Enabled** | Ready for cross-origin requests |
@@ -103,7 +103,7 @@ const registerInternal = async (studentData) => {
         reg_no: "21ITR001",
         dept_name: "Computer Science",
         year_of_study: "3",
-        transaction_id: "TXN123456789"
+        recipt_no: "TXN123456789"
       })
     });
     
@@ -134,7 +134,7 @@ const registerInternal = async (studentData) => {
       reg_no: studentData.regNo,
       dept_name: studentData.department,
       year_of_study: studentData.year,
-      transaction_id: studentData.transactionId
+      recipt_no: studentData.recipt_no
     });
     
     console.log('✅ Success:', response.data);
@@ -154,7 +154,7 @@ interface InternalRegistration {
   reg_no: string;         // Registration number (e.g., "21ITR001")
   dept_name: string;      // Department name
   year_of_study: string;  // Year (e.g., "1", "2", "3", "4")
-  transaction_id: string; // Payment transaction ID
+  recipt_no: string; // Payment recipt_no
 }
 ```
 
@@ -201,7 +201,7 @@ const [formData, setFormData] = useState({
   dept_name: '',
   year_of_study: '',
   college_name: '',
-  transaction_id: ''
+  recipt_no: ''
 });
 
 const handleSubmit = async (e) => {
@@ -239,7 +239,7 @@ interface ExternalRegistration {
   dept_name: string;      // Department name
   year_of_study: string;  // Year of study
   college_name: string;   // College/University name (Required for external)
-  transaction_id: string; // Payment transaction ID
+  recipt_no: string; // Payment recipt_no
 }
 ```
 
@@ -253,7 +253,7 @@ interface ExternalRegistration {
     <input v-model="form.dept_name" placeholder="Department" required />
     <input v-model="form.year_of_study" placeholder="Year" required />
     <input v-model="form.college_name" placeholder="College Name" required />
-    <input v-model="form.transaction_id" placeholder="Transaction ID" required />
+    <input v-model="form.recipt_no" placeholder="recipt_no" required />
     <button type="submit">Register</button>
   </form>
 </template>
@@ -268,7 +268,7 @@ export default {
         dept_name: '',
         year_of_study: '',
         college_name: '',
-        transaction_id: ''
+        recipt_no: ''
       }
     }
   },
@@ -338,7 +338,7 @@ export interface InternalStudent {
   reg_no: string;
   dept_name: string;
   year_of_study: string;
-  transaction_id: string;
+  recipt_no: string;
 }
 
 export interface ExternalStudent extends InternalStudent {
@@ -385,7 +385,7 @@ const InternalRegistrationForm: React.FC = () => {
     reg_no: '',
     dept_name: '',
     year_of_study: '',
-    transaction_id: ''
+    recipt_no: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -409,7 +409,7 @@ const InternalRegistrationForm: React.FC = () => {
         reg_no: '',
         dept_name: '',
         year_of_study: '',
-        transaction_id: ''
+        recipt_no: ''
       });
     } catch (error: any) {
       setMessage('❌ ' + (error.response?.data?.detail?.message || 'Registration failed'));
@@ -424,7 +424,7 @@ const InternalRegistrationForm: React.FC = () => {
       <input name="reg_no" value={formData.reg_no} onChange={handleChange} placeholder="Registration No" required />
       <input name="dept_name" value={formData.dept_name} onChange={handleChange} placeholder="Department" required />
       <input name="year_of_study" value={formData.year_of_study} onChange={handleChange} placeholder="Year" required />
-      <input name="transaction_id" value={formData.transaction_id} onChange={handleChange} placeholder="Transaction ID" required />
+      <input name="recipt_no" value={formData.recipt_no} onChange={handleChange} placeholder="recipt_no" required />
       <button type="submit" disabled={loading}>
         {loading ? 'Submitting...' : 'Register'}
       </button>
@@ -647,13 +647,13 @@ PORT=8000
 
 ### Internal Students Sheet (gid=0)
 
-| Name | Registration Number | Department | Year of Study | Transaction ID | Timestamp |
+| Name | Registration Number | Department | Year of Study | recipt_no | Timestamp |
 |------|---------------------|------------|---------------|----------------|-----------|
 | John Doe | 21ITR001 | Computer Science | 3 | TXN123456 | 2025-10-05 14:30:00 |
 
 ### External Students Sheet (gid=1179914067)
 
-| Name | Registration Number | Department | Year of Study | College Name | Transaction ID | Timestamp |
+| Name | Registration Number | Department | Year of Study | College Name | recipt_no | Timestamp |
 |------|---------------------|------------|---------------|--------------|----------------|-----------|
 | Jane Smith | EXT001 | IT | 2 | ABC College | TXN789012 | 2025-10-05 14:35:00 |
 
@@ -703,7 +703,7 @@ curl http://localhost:8000/queue/status
 #### ❌ Duplicate Registration Error
 
 This is expected behavior! The API prevents duplicate registrations based on:
-- Registration Number + Transaction ID combination
+- Registration Number + recipt_no combination
 
 ---
 
@@ -720,7 +720,7 @@ curl -X POST http://localhost:8000/register/internal \
     "reg_no": "TEST001",
     "dept_name": "Computer Science",
     "year_of_study": "3",
-    "transaction_id": "TXN_TEST_123"
+    "recipt_no": "TXN_TEST_123"
   }'
 
 # Test External Registration
@@ -732,7 +732,7 @@ curl -X POST http://localhost:8000/register/external \
     "dept_name": "IT",
     "year_of_study": "2",
     "college_name": "Test College",
-    "transaction_id": "TXN_EXT_456"
+    "recipt_no": "TXN_EXT_456"
   }'
 
 # Check Queue
@@ -751,7 +751,7 @@ curl http://localhost:8000/queue/status
   "reg_no": "21ITR001",
   "dept_name": "Computer Science",
   "year_of_study": "3",
-  "transaction_id": "TXN123456789"
+  "recipt_no": "TXN123456789"
 }
 ```
 
