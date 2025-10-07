@@ -27,7 +27,7 @@ SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
 SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
 SMTP_FROM_EMAIL = os.getenv('SMTP_FROM_EMAIL', SMTP_USERNAME)
-SMTP_FROM_NAME = os.getenv('SMTP_FROM_NAME', 'CTF Registration Team')
+SMTP_FROM_NAME = os.getenv('SMTP_FROM_NAME', 'Battle of Binaries 1.0 Registration Team')
 
 # Thread-safe queue for handling registrations
 registration_queue = queue.Queue()
@@ -126,12 +126,12 @@ def create_email_template_internal(data: dict) -> str:
         <div class="header">
             <div class="success-icon">✅</div>
             <h1>Registration Confirmed!</h1>
-            <p>Welcome to the CTF Competition</p>
+            <p>Welcome to the Battle of Binaries 1.0 Competition</p>
         </div>
         
         <div class="content">
             <h2>Dear {data['name']},</h2>
-            <p>Congratulations! Your registration for the CTF (Capture The Flag) Competition has been successfully confirmed.</p>
+            <p>Congratulations! Your registration for the Battle of Binaries 1.0 (Capture The Flag) Competition has been successfully confirmed.</p>
             
             <div class="details">
                 <h3 style="color: #667eea; margin-top: 0;">📋 Registration Details</h3>
@@ -165,10 +165,33 @@ def create_email_template_internal(data: dict) -> str:
                 </div>
             </div>
             
+            <div class="details">
+                <h3 style="color: #667eea; margin-top: 0;">📅 Event Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Event Name:</span>
+                    <span class="detail-value">Battle of Binaries 1.0 (Capture The Flag)</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">17th October 2025</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Venue:</span>
+                    <span class="detail-value">DSCS Gallery Hall</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">Karunya Institute of Technology and Sciences, Coimbatore</span>
+                </div>
+                <div class="detail-row" style="border-bottom: none;">
+                    <span class="detail-label">Organized in company with:</span>
+                    <span class="detail-value">CompTIA</span>
+                </div>
+            </div>
+            
             <h3>📅 What's Next?</h3>
             <ul>
                 <li>Check your email regularly for competition updates</li>
-                <li>Join our Discord/Slack channel (link will be shared soon)</li>
                 <li>Prepare your tools and environment for the competition</li>
                 <li>Mark the competition date on your calendar</li>
             </ul>
@@ -180,12 +203,12 @@ def create_email_template_internal(data: dict) -> str:
             <p>Good luck and happy hacking! 🚀</p>
             
             <p>Best regards,<br>
-            <strong>CTF Registration Team</strong></p>
+            <strong>Battle of Binaries 1.0 Registration Team</strong></p>
         </div>
         
         <div class="footer">
             <p>This is an automated confirmation email. Please do not reply to this email.</p>
-            <p>&copy; 2025 CTF Competition. All rights reserved.</p>
+            <p>&copy; 2025 Battle of Binaries 1.0 Competition. All rights reserved.</p>
         </div>
     </body>
     </html>
@@ -256,12 +279,12 @@ def create_email_template_external(data: dict) -> str:
         <div class="header">
             <div class="success-icon">✅</div>
             <h1>Registration Confirmed!</h1>
-            <p>Welcome to the CTF Competition</p>
+            <p>Welcome to the Battle of Binaries 1.0 Competition</p>
         </div>
         
         <div class="content">
             <h2>Dear {data['name']},</h2>
-            <p>Congratulations! Your registration for the CTF (Capture The Flag) Competition has been successfully confirmed. We're excited to have you participate from <strong>{data['college_name']}</strong>!</p>
+            <p>Congratulations! Your registration for the Battle of Binaries 1.0 (Capture The Flag) Competition has been successfully confirmed. We're excited to have you participate from <strong>{data['college_name']}</strong>!</p>
             
             <div class="details">
                 <h3 style="color: #f5576c; margin-top: 0;">📋 Registration Details</h3>
@@ -299,10 +322,33 @@ def create_email_template_external(data: dict) -> str:
                 </div>
             </div>
             
+            <div class="details">
+                <h3 style="color: #f5576c; margin-top: 0;">📅 Event Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Event Name:</span>
+                    <span class="detail-value">Battle of Binaries 1.0 (Capture The Flag)</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value">17th October 2025</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Venue:</span>
+                    <span class="detail-value">DSCS Gallery Hall</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">Karunya Institute of Technology and Sciences, Coimbatore</span>
+                </div>
+                <div class="detail-row" style="border-bottom: none;">
+                    <span class="detail-label">Organized in company with:</span>
+                    <span class="detail-value">CompTIA</span>
+                </div>
+            </div>
+            
             <h3>📅 What's Next?</h3>
             <ul>
                 <li>Check your email regularly for competition updates</li>
-                <li>Join our Discord/Slack channel (link will be shared soon)</li>
                 <li>Prepare your tools and environment for the competition</li>
                 <li>Mark the competition date on your calendar</li>
                 <li>Connect with other participants from different colleges</li>
@@ -315,12 +361,12 @@ def create_email_template_external(data: dict) -> str:
             <p>Good luck and happy hacking! 🚀</p>
             
             <p>Best regards,<br>
-            <strong>CTF Registration Team</strong></p>
+            <strong>Battle of Binaries 1.0 Registration Team</strong></p>
         </div>
         
         <div class="footer">
             <p>This is an automated confirmation email. Please do not reply to this email.</p>
-            <p>&copy; 2025 CTF Competition. All rights reserved.</p>
+            <p>&copy; 2025 Battle of Binaries 1.0 Competition. All rights reserved.</p>
         </div>
     </body>
     </html>
@@ -544,10 +590,10 @@ def save_to_google_sheet(data: dict, sheet_type: str):
         try:
             if sheet_type == "internal":
                 html_content = create_email_template_internal(data)
-                subject = "✅ CTF Registration Confirmed - Internal Participant"
+                subject = "✅ Battle of Binaries 1.0 Registration Confirmed - Internal Participant"
             else:
                 html_content = create_email_template_external(data)
-                subject = "✅ CTF Registration Confirmed - External Participant"
+                subject = "✅ Battle of Binaries 1.0 Registration Confirmed - External Participant"
             
             email_result = send_confirmation_email(
                 to_email=data['email'],
@@ -605,7 +651,7 @@ worker_thread.start()
 
 # Create FastAPI app
 app = FastAPI(
-    title="CTF Registration API",
+    title="Battle of Binaries 1.0 Registration API",
     description="Asynchronous API for handling internal and external student registrations",
     version="1.0.0"
 )
@@ -734,7 +780,7 @@ async def get_queue_status():
 async def home():
     """Home endpoint with API information"""
     return {
-        "message": "CTF Registration API - Asynchronous Student Registration System",
+        "message": "Battle of Binaries 1.0 Registration API - Asynchronous Student Registration System",
         "version": "1.0.0",
         "features": [
             "Asynchronous processing",
@@ -814,7 +860,7 @@ async def startup_event():
     environment = os.getenv('ENVIRONMENT', 'development')
     
     print("=" * 60)
-    print("🚀 CTF Registration API Starting...")
+    print("🚀 Battle of Binaries 1.0 Registration API Starting...")
     print("=" * 60)
     print(f"Environment: {environment.upper()}")
     print(f"Port: {os.getenv('PORT', '8000')}")
@@ -840,11 +886,11 @@ async def shutdown_event():
     """Shutdown event handler"""
     print("Waiting for queue to finish processing...")
     registration_queue.join()
-    print("CTF Registration API shutting down...")
+    print("Battle of Binaries 1.0 Registration API shutting down...")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    print(f"Starting CTF Registration API on port {port}...")
+    print(f"Starting Battle of Binaries 1.0 Registration API on port {port}...")
     print(f"Access API documentation at: http://localhost:{port}/docs")
     
     uvicorn.run(
