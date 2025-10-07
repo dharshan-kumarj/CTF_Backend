@@ -14,9 +14,20 @@ from typing import Optional
 import queue
 import threading
 from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Email configuration
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+SMTP_FROM_EMAIL = os.getenv('SMTP_FROM_EMAIL', SMTP_USERNAME)
+SMTP_FROM_NAME = os.getenv('SMTP_FROM_NAME', 'CTF Registration Team')
 
 # Thread-safe queue for handling registrations
 registration_queue = queue.Queue()
@@ -40,6 +51,323 @@ class ExternalRegistration(BaseModel):
     email: str = Field(..., description="Email address")
     phone_number: str = Field(..., description="Phone number")
     recipt_no: str = Field(..., description="recipt_no")
+
+def create_email_template_internal(data: dict) -> str:
+    """Create HTML email template for internal students"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            .header {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+                border-radius: 10px 10px 0 0;
+            }}
+            .content {{
+                background: #f9f9f9;
+                padding: 30px;
+                border: 1px solid #ddd;
+            }}
+            .details {{
+                background: white;
+                padding: 20px;
+                margin: 20px 0;
+                border-left: 4px solid #667eea;
+                border-radius: 5px;
+            }}
+            .detail-row {{
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }}
+            .detail-label {{
+                font-weight: bold;
+                color: #667eea;
+                display: inline-block;
+                width: 180px;
+            }}
+            .detail-value {{
+                color: #333;
+            }}
+            .footer {{
+                background: #333;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 0 0 10px 10px;
+                font-size: 12px;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 12px 30px;
+                background: #667eea;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin: 20px 0;
+            }}
+            .success-icon {{
+                font-size: 48px;
+                margin-bottom: 10px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="success-icon">✅</div>
+            <h1>Registration Confirmed!</h1>
+            <p>Welcome to the CTF Competition</p>
+        </div>
+        
+        <div class="content">
+            <h2>Dear {data['name']},</h2>
+            <p>Congratulations! Your registration for the CTF (Capture The Flag) Competition has been successfully confirmed.</p>
+            
+            <div class="details">
+                <h3 style="color: #667eea; margin-top: 0;">📋 Registration Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{data['name']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Registration Number:</span>
+                    <span class="detail-value">{data['reg_no']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Division:</span>
+                    <span class="detail-value">{data['division']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Year of Study:</span>
+                    <span class="detail-value">{data['year_of_study']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{data['email']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number:</span>
+                    <span class="detail-value">{data['phone_number']}</span>
+                </div>
+                <div class="detail-row" style="border-bottom: none;">
+                    <span class="detail-label">Receipt Number:</span>
+                    <span class="detail-value">{data['recipt_no']}</span>
+                </div>
+            </div>
+            
+            <h3>📅 What's Next?</h3>
+            <ul>
+                <li>Check your email regularly for competition updates</li>
+                <li>Join our Discord/Slack channel (link will be shared soon)</li>
+                <li>Prepare your tools and environment for the competition</li>
+                <li>Mark the competition date on your calendar</li>
+            </ul>
+            
+            <p><strong>Important:</strong> Please save this email for your records. Your receipt number <strong>{data['recipt_no']}</strong> is your proof of registration.</p>
+            
+            <p>If you have any questions or concerns, feel free to reach out to our support team.</p>
+            
+            <p>Good luck and happy hacking! 🚀</p>
+            
+            <p>Best regards,<br>
+            <strong>CTF Registration Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated confirmation email. Please do not reply to this email.</p>
+            <p>&copy; 2025 CTF Competition. All rights reserved.</p>
+        </div>
+    </body>
+    </html>
+    """
+
+def create_email_template_external(data: dict) -> str:
+    """Create HTML email template for external students"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            .header {{
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                color: white;
+                padding: 30px;
+                text-align: center;
+                border-radius: 10px 10px 0 0;
+            }}
+            .content {{
+                background: #f9f9f9;
+                padding: 30px;
+                border: 1px solid #ddd;
+            }}
+            .details {{
+                background: white;
+                padding: 20px;
+                margin: 20px 0;
+                border-left: 4px solid #f5576c;
+                border-radius: 5px;
+            }}
+            .detail-row {{
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }}
+            .detail-label {{
+                font-weight: bold;
+                color: #f5576c;
+                display: inline-block;
+                width: 180px;
+            }}
+            .detail-value {{
+                color: #333;
+            }}
+            .footer {{
+                background: #333;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 0 0 10px 10px;
+                font-size: 12px;
+            }}
+            .success-icon {{
+                font-size: 48px;
+                margin-bottom: 10px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="success-icon">✅</div>
+            <h1>Registration Confirmed!</h1>
+            <p>Welcome to the CTF Competition</p>
+        </div>
+        
+        <div class="content">
+            <h2>Dear {data['name']},</h2>
+            <p>Congratulations! Your registration for the CTF (Capture The Flag) Competition has been successfully confirmed. We're excited to have you participate from <strong>{data['college_name']}</strong>!</p>
+            
+            <div class="details">
+                <h3 style="color: #f5576c; margin-top: 0;">📋 Registration Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{data['name']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Registration Number:</span>
+                    <span class="detail-value">{data['reg_no']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Department:</span>
+                    <span class="detail-value">{data['dept_name']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Year of Study:</span>
+                    <span class="detail-value">{data['year_of_study']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">College:</span>
+                    <span class="detail-value">{data['college_name']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{data['email']}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number:</span>
+                    <span class="detail-value">{data['phone_number']}</span>
+                </div>
+                <div class="detail-row" style="border-bottom: none;">
+                    <span class="detail-label">Receipt Number:</span>
+                    <span class="detail-value">{data['recipt_no']}</span>
+                </div>
+            </div>
+            
+            <h3>📅 What's Next?</h3>
+            <ul>
+                <li>Check your email regularly for competition updates</li>
+                <li>Join our Discord/Slack channel (link will be shared soon)</li>
+                <li>Prepare your tools and environment for the competition</li>
+                <li>Mark the competition date on your calendar</li>
+                <li>Connect with other participants from different colleges</li>
+            </ul>
+            
+            <p><strong>Important:</strong> Please save this email for your records. Your receipt number <strong>{data['recipt_no']}</strong> is your proof of registration.</p>
+            
+            <p>If you have any questions or concerns, feel free to reach out to our support team.</p>
+            
+            <p>Good luck and happy hacking! 🚀</p>
+            
+            <p>Best regards,<br>
+            <strong>CTF Registration Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated confirmation email. Please do not reply to this email.</p>
+            <p>&copy; 2025 CTF Competition. All rights reserved.</p>
+        </div>
+    </body>
+    </html>
+    """
+
+def send_confirmation_email(to_email: str, subject: str, html_content: str, student_name: str) -> dict:
+    """Send confirmation email using SMTP"""
+    try:
+        # Check if SMTP is configured
+        if not SMTP_USERNAME or not SMTP_PASSWORD:
+            print("⚠️  SMTP credentials not configured. Email not sent.")
+            return {
+                "success": False,
+                "message": "SMTP not configured"
+            }
+        
+        # Create message
+        msg = MIMEMultipart('alternative')
+        msg['From'] = f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        
+        # Attach HTML content
+        html_part = MIMEText(html_content, 'html')
+        msg.attach(html_part)
+        
+        # Connect to SMTP server and send email
+        print(f"📧 Sending confirmation email to {to_email}...")
+        
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()  # Enable TLS encryption
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            server.send_message(msg)
+        
+        print(f"✅ Email sent successfully to {student_name} ({to_email})")
+        return {
+            "success": True,
+            "message": f"Email sent to {to_email}"
+        }
+    
+    except Exception as e:
+        print(f"❌ Error sending email to {to_email}: {e}")
+        traceback.print_exc()
+        return {
+            "success": False,
+            "message": f"Failed to send email: {str(e)}"
+        }
 
 def get_google_credentials():
     """Load Google credentials from environment variables or file"""
@@ -211,9 +539,29 @@ def save_to_google_sheet(data: dict, sheet_type: str):
         worksheet.append_row(row_data)
         print(f"Successfully saved {sheet_type} registration: {data['name']} ({data['reg_no']})")
         
+        # Send confirmation email after successful registration
+        email_result = {"success": False, "message": "Email not sent"}
+        try:
+            if sheet_type == "internal":
+                html_content = create_email_template_internal(data)
+                subject = "✅ CTF Registration Confirmed - Internal Participant"
+            else:
+                html_content = create_email_template_external(data)
+                subject = "✅ CTF Registration Confirmed - External Participant"
+            
+            email_result = send_confirmation_email(
+                to_email=data['email'],
+                subject=subject,
+                html_content=html_content,
+                student_name=data['name']
+            )
+        except Exception as email_error:
+            print(f"⚠️  Email sending failed but registration successful: {email_error}")
+        
         return {
             "success": True,
             "message": f"{sheet_type.capitalize()} registration saved successfully",
+            "email_sent": email_result.get('success', False),
             "data": {
                 **data,
                 "timestamp": timestamp,

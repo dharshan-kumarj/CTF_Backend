@@ -78,12 +78,38 @@ const response = await axios.post('http://localhost:8000/register/internal', {
 
 **For detailed setup instructions, see [API_DOCS.md](./API_DOCS.md#-backend-setup)**
 
+## 📧 Setup Email Notifications
+
+Configure SMTP to send confirmation emails after successful registration.
+
+1. Copy `.env.example` to `.env`
+2. Add SMTP credentials (Gmail, Outlook, SendGrid, etc.)
+3. For Gmail: Generate App Password at https://myaccount.google.com/apppasswords
+
+```bash
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM_EMAIL=your-email@gmail.com
+SMTP_FROM_NAME=CTF Registration Team
+```
+
+**For detailed email setup, see [EMAIL_SETUP.md](./EMAIL_SETUP.md)**
+
+### Test Email Configuration
+```bash
+python test_email.py
+```
+
 ## 📊 Features
 
 ✅ Asynchronous processing with queue system  
 ✅ No data loss - thread-safe operations  
 ✅ Automatic duplicate detection  
 ✅ Real-time Google Sheets integration  
+✅ **📧 Email confirmation after successful registration**  
+✅ Beautiful HTML email templates  
 ✅ CORS enabled for all origins  
 ✅ Automatic timestamps  
 
