@@ -28,6 +28,7 @@ class InternalRegistration(BaseModel):
     division: str = Field(..., description="Division")
     year_of_study: str = Field(..., description="Year of study")
     email: str = Field(..., description="Email address")
+    phone_number: str = Field(..., description="Phone number")
     recipt_no: str = Field(..., description="recipt_no")
 
 class ExternalRegistration(BaseModel):
@@ -37,6 +38,7 @@ class ExternalRegistration(BaseModel):
     year_of_study: str = Field(..., description="Year of study")
     college_name: str = Field(..., description="College name")
     email: str = Field(..., description="Email address")
+    phone_number: str = Field(..., description="Phone number")
     recipt_no: str = Field(..., description="recipt_no")
 
 def get_google_credentials():
@@ -157,9 +159,9 @@ def save_to_google_sheet(data: dict, sheet_type: str):
             headers = worksheet.row_values(1)
             if not headers or len(headers) == 0:
                 if sheet_type == "internal":
-                    worksheet.append_row(["Name", "Registration Number", "Division", "Year of Study", "Email", "recipt_no", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Division", "Year of Study", "Email", "Phone Number", "recipt_no", "Timestamp"])
                 else:
-                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "Email", "recipt_no", "Timestamp"])
+                    worksheet.append_row(["Name", "Registration Number", "Department", "Year of Study", "College Name", "Email", "Phone Number", "recipt_no", "Timestamp"])
                 print(f"Created headers for {sheet_type} sheet")
         except Exception as e:
             print(f"Error checking headers: {e}")
@@ -172,6 +174,7 @@ def save_to_google_sheet(data: dict, sheet_type: str):
                 data['division'],
                 data['year_of_study'],
                 data['email'],
+                data['phone_number'],
                 data['recipt_no'],
                 timestamp
             ]
@@ -183,6 +186,7 @@ def save_to_google_sheet(data: dict, sheet_type: str):
                 data['year_of_study'],
                 data['college_name'],
                 data['email'],
+                data['phone_number'],
                 data['recipt_no'],
                 timestamp
             ]
@@ -408,6 +412,7 @@ async def home():
                 "division": "Division (required)",
                 "year_of_study": "Year of study (required)",
                 "email": "Email address (required)",
+                "phone_number": "Phone number (required)",
                 "recipt_no": "recipt_no (required)"
             },
             "example": {
@@ -416,6 +421,7 @@ async def home():
                 "division": "A",
                 "year_of_study": "3",
                 "email": "john.doe@example.com",
+                "phone_number": "+919876543210",
                 "recipt_no": "TXN123456789"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=0#gid=0"
@@ -430,6 +436,7 @@ async def home():
                 "year_of_study": "Year of study (required)",
                 "college_name": "College name (required)",
                 "email": "Email address (required)",
+                "phone_number": "Phone number (required)",
                 "recipt_no": "recipt_no (required)"
             },
             "example": {
@@ -439,6 +446,7 @@ async def home():
                 "year_of_study": "2",
                 "college_name": "ABC Engineering College",
                 "email": "jane.smith@example.com",
+                "phone_number": "+919123456789",
                 "recipt_no": "TXN987654321"
             },
             "google_sheet": "https://docs.google.com/spreadsheets/d/1NXwX5RkuPMPxOonmD7cJDjCK5sxhUnvytwj7O3FMyuQ/edit?gid=1179914067#gid=1179914067"
