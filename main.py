@@ -131,7 +131,7 @@ def create_email_template_internal(data: dict) -> str:
         
         <div class="content">
             <h2>Dear {data['name']},</h2>
-            <p>Congratulations! Your registration for the Battle of Binaries 1.0 (Capture The Flag) Competition has been successfully confirmed.</p>
+            <p>Congratulations! Your registration for the Battle of Binaries 1.0  Competition has been successfully confirmed.</p>
             
             <div class="details">
                 <h3 style="color: #667eea; margin-top: 0;">📋 Registration Details</h3>
@@ -169,7 +169,7 @@ def create_email_template_internal(data: dict) -> str:
                 <h3 style="color: #667eea; margin-top: 0;">📅 Event Details</h3>
                 <div class="detail-row">
                     <span class="detail-label">Event Name:</span>
-                    <span class="detail-value">Battle of Binaries 1.0 (Capture The Flag)</span>
+                    <span class="detail-value">Battle of Binaries 1.0</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Date:</span>
@@ -284,7 +284,7 @@ def create_email_template_external(data: dict) -> str:
         
         <div class="content">
             <h2>Dear {data['name']},</h2>
-            <p>Congratulations! Your registration for the Battle of Binaries 1.0 (Capture The Flag) Competition has been successfully confirmed. We're excited to have you participate from <strong>{data['college_name']}</strong>!</p>
+            <p>Congratulations! Your registration for the Battle of Binaries 1.0  Competition has been successfully confirmed. We're excited to have you participate from <strong>{data['college_name']}</strong>!</p>
             
             <div class="details">
                 <h3 style="color: #f5576c; margin-top: 0;">📋 Registration Details</h3>
@@ -326,7 +326,7 @@ def create_email_template_external(data: dict) -> str:
                 <h3 style="color: #f5576c; margin-top: 0;">📅 Event Details</h3>
                 <div class="detail-row">
                     <span class="detail-label">Event Name:</span>
-                    <span class="detail-value">Battle of Binaries 1.0 (Capture The Flag)</span>
+                    <span class="detail-value">Battle of Binaries 1.0 </span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Date:</span>
